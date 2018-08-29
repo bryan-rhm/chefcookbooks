@@ -43,7 +43,7 @@ template "#{homefolder}/redis-stable/redis.conf" do
 		master = node["opsworks"]["instance"]["private_ip"]
 		port = "6379"
 	variables(
-		:master_ip => master
+		:master_ip => master,
 		:master_port => port
 		)
 end
@@ -60,7 +60,7 @@ template "#{homefolder}/redis-stable/sentinel.conf" do
 			port = "6379"
 	end
 	variables(
-		:master_ip => master
+		:master_ip => master,
 		:master_port => port
 		)
 end
