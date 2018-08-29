@@ -10,9 +10,12 @@ template "#{homefolder}/redis-stable/redis.conf" do
 	master = "NO ONE"
 	port = ""
 	instance = search("aws_opsworks_instance", "self:true").first
-	if instance["hostname"]== "redis1"
-		master = instance["private_ip"]
-		port = "6379"
+	if instance["hostname"] != "redis1"
+		search("aws_opsworks_instance").each do |instance|
+			if instance["hostname"] == "redis1"
+				master = instance["private_ip"]
+				port = "6379"
+			end
 	end
 	variables(
 		:master_ip => master,
