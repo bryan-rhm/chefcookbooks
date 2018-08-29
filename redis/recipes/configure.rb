@@ -16,6 +16,7 @@ template "#{homefolder}/redis-stable/redis.conf" do
 				master = instance["private_ip"]
 				port = "6379"
 			end
+		end
 	end
 	variables(
 		:master_ip => master,
