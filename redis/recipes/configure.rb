@@ -9,9 +9,9 @@ template "#{homefolder}/redis-stable/redis.conf" do
 	mode "0644"
 	master = "NO ONE"
 	port = ""
-	hostname = node["opsworks"]["instance"]["hostname"]
-	if hostname == "redis1"
-		master = node["opsworks"]["instance"]["private_ip"]
+	instance = search("aws_opsworks_instance", "self:true").first
+	if instance["hostname"]== "redis1"
+		master = instance["private_ip"]
 		port = "6379"
 	end
 	variables(
@@ -22,13 +22,12 @@ end
 
 template "#{homefolder}/redis-stable/sentinel.conf" do
 	source "sentinel.rb"
-	layer =node["opsworks"]["instance"]["layers"][0]
 	mode "0644"
-	master = "NO ONE"
+	master = ""
 	port = ""
-	node["opsworks"]["layers"]["#{layer}"]["instances"].each  do |instance,properties|
-		if instance == "redis1"
-			master = properties["private_ip"]
+	search("aws_opsworks_instance").each do |instance|
+		if instance["hostname"] == "redis1"
+			master = instance["private_ip"]
 			port = "6379"
 		end
 	end
