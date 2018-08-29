@@ -43,10 +43,12 @@ end
 
 execute "kill-redis-server" do
 	command "pkill redis-server"
+	returns [0,1]
 end
 
 execute "kill-redis-sentinel" do
 	command "pkill redis-sentinel"
+	returns [0,1]
 end
 
 execute "start-redis" do
