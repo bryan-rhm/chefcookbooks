@@ -50,7 +50,7 @@ systemd_unit "redis.service" do
 		User: 'redis',
 		Group: 'redis',
 		ExecStart: '/etc/redis/src/redis-server /etc/redis/redis.conf',
-		ExecStop: '/etc/redis/src/redis-cli shutdown'
+		ExecStop: '/etc/redis/src/redis-cli shutdown',
 		Restart: 'always',
 	},Install: {
 		WantedBy: 'multi-user.target',
