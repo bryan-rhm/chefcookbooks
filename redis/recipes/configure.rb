@@ -51,10 +51,10 @@ end
 
 execute "start-redis" do
 	command "redis-server ../redis.conf &"
-	pwd "#{homefolder}/redis-stable/src"
+	cwd "#{homefolder}/redis-stable/src"
 end
 
 execute "start-sentinel" do
 	command "redis-sentinel ../sentinel.conf  &"
-	pwd "#{homefolder}/redis-stable/src"
+	cwd "#{homefolder}/redis-stable/src"
 end
