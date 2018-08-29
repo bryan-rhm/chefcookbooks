@@ -3,7 +3,7 @@
 # Recipe:: configure
 # Author:: Bryan Recinos
 # Copyright:: 2018, The Authors, All Rights Reserved.
-
+homefolder = "/home/ubuntu"
 template "#{homefolder}/redis-stable/redis.conf" do
 	source "redis.rb"
 	mode "0644"
@@ -12,6 +12,7 @@ template "#{homefolder}/redis-stable/redis.conf" do
 	if node["opsworks"]["instance"]["hostname"] == "redis1"
 		master = node["opsworks"]["instance"]["private_ip"]
 		port = "6379"
+	end
 	variables(
 		:master_ip => master,
 		:master_port => port
@@ -28,6 +29,7 @@ template "#{homefolder}/redis-stable/sentinel.conf" do
 		if instance == "redis1"
 			master = properties["private_ip"]
 			port = "6379"
+		end
 	end
 	variables(
 		:master_ip => master,
