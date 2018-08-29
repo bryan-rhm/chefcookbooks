@@ -7,10 +7,12 @@ homefolder = "/home/ubuntu"
 template "#{homefolder}/redis-stable/redis.conf" do
 	source "redis.rb"
 	mode "0644"
+	isMaster ="#"
 	master = "NO ONE"
 	port = ""
 	instance = search("aws_opsworks_instance", "self:true").first
 	if instance["hostname"] != "redis1"
+		isMaster=""
 		search("aws_opsworks_instance").each do |instance|
 			if instance["hostname"] == "redis1"
 				master = instance["private_ip"]
@@ -20,7 +22,8 @@ template "#{homefolder}/redis-stable/redis.conf" do
 	end
 	variables(
 		:master_ip => master,
-		:master_port => port
+		:master_port => port,
+		:is_master => isMaster
 		)
 end
 
