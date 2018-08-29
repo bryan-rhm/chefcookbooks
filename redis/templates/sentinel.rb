@@ -20,31 +20,6 @@ protected-mode no
 # The port that this sentinel instance will run on
 port 26379
 
-# By default Redis Sentinel does not run as a daemon. Use 'yes' if you need it.
-# Note that Redis will write a pid file in /var/run/redis-sentinel.pid when
-# daemonized.
-daemonize yes
-
-# When running daemonized, Redis Sentinel writes a pid file in
-# /var/run/redis-sentinel.pid by default. You can specify a custom pid file
-# location here.
-pidfile /var/run/redis-sentinel.pid
-
-# By default Redis Sentinel listens for connections from all the network
-# interfaces available on the server. It is possible to listen to just one or
-# multiple interfaces using the "bind" configuration directive, followed by one
-# or more IP addresses.
-#
-# Examples:
-#
-# bind 192.168.1.100 10.0.0.1
-# bind 127.0.0.1
-
-# Specify the log file name. Also the empty string can be used to force
-# Sentinel to log on the standard output. Note that if you use standard
-# output for logging but daemonize, logs will be sent to /dev/null
-logfile ""
-
 # sentinel announce-ip <ip>
 # sentinel announce-port <port>
 #
@@ -228,22 +203,3 @@ sentinel failover-timeout mymaster 10000
 
 sentinel deny-scripts-reconfig yes
 
-# REDIS COMMANDS RENAMING
-#
-# Sometimes the Redis server has certain commands, that are needed for Sentinel
-# to work correctly, renamed to unguessable strings. This is often the case
-# of CONFIG and SLAVEOF in the context of providers that provide Redis as
-# a service, and don't want the customers to reconfigure the instances outside
-# of the administration console.
-#
-# In such case it is possible to tell Sentinel to use different command names
-# instead of the normal ones. For example if the master "mymaster", and the
-# associated slaves, have "CONFIG" all renamed to "GUESSME", I could use:
-#
-# sentinel rename-command mymaster CONFIG GUESSME
-#
-# After such configuration is set, every time Sentinel would use CONFIG it will
-# use GUESSME instead. Note that there is no actual need to respect the command
-# case, so writing "config guessme" is the same in the example above.
-#
-# SENTINEL SET can also be used in order to perform this configuration at runtime.

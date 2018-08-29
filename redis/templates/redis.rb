@@ -59,7 +59,7 @@
 # internet, binding to all the interfaces is dangerous and will expose the
 # instance to everybody on the internet. So by default we uncomment the
 # following bind directive, that will force Redis to listen only into
-# the IPv4 loopback interface address (this means Redis will be able to
+# the IPv4 lookback interface address (this means Redis will be able to
 # accept connections only from clients running into the same computer it
 # is running).
 #
@@ -296,9 +296,7 @@ slaveof <%= @master_ip %> <%= @master_port %>
 #
 # 2) if slave-serve-stale-data is set to 'no' the slave will reply with
 #    an error "SYNC with master in progress" to all the kind of commands
-#    but to INFO, SLAVEOF, AUTH, PING, SHUTDOWN, REPLCONF, ROLE, CONFIG,
-#    SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE, PUBLISH, PUBSUB,
-#    COMMAND, POST, HOST: and LATENCY.
+#    but to INFO and SLAVEOF.
 #
 slave-serve-stale-data yes
 
@@ -602,26 +600,6 @@ slave-priority 100
 #
 # maxmemory-samples 5
 
-# Starting from Redis 5, by default a slave will ignore its maxmemory setting
-# (unless it is promoted to master after a failover or manually). It means
-# that the eviction of keys will be just handled by the master, sending the
-# DEL commands to the slave as keys evict in the master side.
-#
-# This behavior ensures that masters and slaves stay consistent, and is usually
-# what you want, however if your slave is writable, or you want the slave to have
-# a different memory setting, and you are sure all the writes performed to the
-# slave are idempotent, then you may change this default (but be sure to understand
-# what you are doing).
-#
-# Note that since the slave by default does not evict, it may end using more
-# memory than the one set via maxmemory (there are certain buffers that may
-# be larger on the slave, or data structures may sometimes take more memory and so
-# forth). So make sure you monitor your slaves and make sure they have enough
-# memory to never hit a real out-of-memory condition before the master hits
-# the configured maxmemory setting.
-#
-# slave-ingore-maxmemory yes
-
 ############################# LAZY FREEING ####################################
 
 # Redis has two primitives to delete keys. One is called DEL and is a blocking
@@ -659,7 +637,7 @@ slave-priority 100
 #    it with the specified string.
 # 4) During replication, when a slave performs a full resynchronization with
 #    its master, the content of the whole database is removed in order to
-#    load the RDB file just transferred.
+#    load the RDB file just transfered.
 #
 # In all the above cases the default is to delete objects in a blocking way,
 # like if DEL was called. However you can configure each case specifically
@@ -798,7 +776,10 @@ aof-load-truncated yes
 # When loading Redis recognizes that the AOF file starts with the "REDIS"
 # string and loads the prefixed RDB file, and continues loading the AOF
 # tail.
-aof-use-rdb-preamble yes
+#
+# This is currently turned off by default in order to avoid the surprise
+# of a format change, but will at some point be used as the default.
+aof-use-rdb-preamble no
 
 ################################ LUA SCRIPTING  ###############################
 
@@ -1126,17 +1107,6 @@ zset-max-ziplist-value 64
 # composed of many HyperLogLogs with cardinality in the 0 - 15000 range.
 hll-sparse-max-bytes 3000
 
-# Streams macro node max size / items. The stream data structure is a radix
-# tree of big nodes that encode multiple items inside. Using this configuration
-# it is possible to configure how big a single node can be in bytes, and the
-# maximum number of items it may contain before switching to a new node when
-# appending new stream entries. If any of the following settings are set to
-# zero, the limit is ignored, so for instance it is possible to set just a
-# max entires limit by setting max-bytes to 0 and max-entries to the desired
-# value.
-stream-node-max-bytes 4096
-stream-node-max-entries 100
-
 # Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
 # order to help rehashing the main Redis hash table (the one mapping top-level
 # keys to values). The hash table implementation Redis uses (see dict.c)
@@ -1225,33 +1195,11 @@ client-output-buffer-limit pubsub 32mb 8mb 60
 # 100 only in environments where very low latency is required.
 hz 10
 
-# Normally it is useful to have an HZ value which is proportional to the
-# number of clients connected. This is useful in order, for instance, to
-# avoid too many clients are processed for each background task invocation
-# in order to avoid latency spikes.
-#
-# Since the default HZ value by default is conservatively set to 10, Redis
-# offers, and enables by default, the ability to use an adaptive HZ value
-# which will temporary raise when there are many connected clients.
-#
-# When dynamic HZ is enabled, the actual configured HZ will be used as
-# as a baseline, but multiples of the configured HZ value will be actually
-# used as needed once more clients are connected. In this way an idle
-# instance will use very little CPU time while a busy instance will be
-# more responsive.
-dynamic-hz yes
-
 # When a child rewrites the AOF file, if the following option is enabled
 # the file will be fsync-ed every 32 MB of data generated. This is useful
 # in order to commit the file to the disk more incrementally and avoid
 # big latency spikes.
 aof-rewrite-incremental-fsync yes
-
-# When redis saves RDB file, if the following option is enabled
-# the file will be fsync-ed every 32 MB of data generated. This is useful
-# in order to commit the file to the disk more incrementally and avoid
-# big latency spikes.
-rdb-save-incremental-fsync yes
 
 # Redis LFU eviction (see maxmemory setting) can be tuned. However it is a good
 # idea to start with the default settings and only change them after investigating
@@ -1362,12 +1310,8 @@ rdb-save-incremental-fsync yes
 # active-defrag-threshold-upper 100
 
 # Minimal effort for defrag in CPU percentage
-# active-defrag-cycle-min 5
+# active-defrag-cycle-min 25
 
 # Maximal effort for defrag in CPU percentage
 # active-defrag-cycle-max 75
-
-# Maximum number of set/hash/zset/list fields that will be processed from
-# the main dictionary scan
-# active-defrag-max-scan-fields 1000
 
