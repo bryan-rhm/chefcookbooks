@@ -33,5 +33,3 @@ execute "install-redis" do
 	command "make && make test && sudo make install"
 	cwd "#{homefolder}/redis-stable"
 end
-
-

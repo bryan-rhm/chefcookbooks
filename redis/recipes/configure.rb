@@ -9,7 +9,8 @@ template "#{homefolder}/redis-stable/redis.conf" do
 	mode "0644"
 	master = "NO ONE"
 	port = ""
-	if node["opsworks"]["instance"]["hostname"] == "redis1"
+	hostname = node["opsworks"]["instance"]["hostname"]
+	if hostname == "redis1"
 		master = node["opsworks"]["instance"]["private_ip"]
 		port = "6379"
 	end
