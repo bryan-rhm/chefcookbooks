@@ -40,3 +40,21 @@ template "#{homefolder}/redis-stable/sentinel.conf" do
 		:master_port => port
 		)
 end
+
+execute "kill-redis-server" do
+	command "pkill redis-server"
+end
+
+execute "kill-redis-sentinel" do
+	command "pkill redis-sentinel"
+end
+
+execute "start-redis" do
+	command "redis-server ../redis.conf &"
+	pwd "#{homefolder}/redis-stable/src"
+end
+
+execute "start-sentinel" do
+	command "redis-sentinel ../sentinel.conf  &"
+	pwd "#{homefolder}/redis-stable/src"
+end
