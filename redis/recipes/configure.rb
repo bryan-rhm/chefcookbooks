@@ -14,7 +14,7 @@ template "/etc/redis/redis.conf" do
 		isMaster=""
 		search("aws_opsworks_instance").each do |instance|
 			if instance["hostname"] == "redis1"
-				master = instance["private_ip"]
+				master = instance["public_ip"]
 				port = "6379"
 			end
 		end
@@ -33,7 +33,7 @@ template "/etc/redis/sentinel.conf" do
 	port = ""
 	search("aws_opsworks_instance").each do |instance|
 		if instance["hostname"] == "redis1"
-			master = instance["private_ip"]
+			master = instance["public_ip"]
 			port = "6379"
 		end
 	end
