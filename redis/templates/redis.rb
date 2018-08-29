@@ -278,7 +278,7 @@ dir ./
 #    network partition slaves automatically try to reconnect to masters
 #    and resynchronize with them.
 #
-slaveof <%= master_ip %> <%= master_port %>
+slaveof <%= @master_ip %> <%= @master_port %>
 
 # If the master is password protected (using the "requirepass" configuration
 # directive below) it is possible to tell the slave to authenticate before
