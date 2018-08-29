@@ -3,8 +3,7 @@
 # Recipe:: configure
 # Author:: Bryan Recinos
 # Copyright:: 2018, The Authors, All Rights Reserved.
-homefolder = "/home/ubuntu"
-template "#{homefolder}/redis-stable/redis.conf" do
+template "/etc/redis/redis.conf" do
 	source "redis.rb"
 	mode "0644"
 	isMaster ="#"
@@ -27,7 +26,7 @@ template "#{homefolder}/redis-stable/redis.conf" do
 		)
 end
 
-template "#{homefolder}/redis-stable/sentinel.conf" do
+template "/etc/redis/sentinel.conf" do
 	source "sentinel.rb"
 	mode "0644"
 	master = ""
@@ -44,22 +43,10 @@ template "#{homefolder}/redis-stable/sentinel.conf" do
 		)
 end
 
-execute "kill-redis-server" do
-	command "pkill redis-server"
-	returns [0,1]
-end
-
-execute "kill-redis-sentinel" do
-	command "pkill redis-sentinel"
-	returns [0,1]
-end
-
 execute "start-redis" do
-	command "redis-server ../redis.conf &"
-	cwd "#{homefolder}/redis-stable/src"
+	command "sudo systemctl restart redis"
 end
 
 execute "start-sentinel" do
-	command "redis-sentinel ../sentinel.conf  &"
-	cwd "#{homefolder}/redis-stable/src"
+	command "sudo systemctl restart sentinel"
 end
