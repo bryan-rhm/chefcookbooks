@@ -185,7 +185,7 @@ What OpsWorsk do, is to pull the recipes of git repository indicated and select 
 - undeploy
 - shutdown
 
-You should indicate what recipe use under the  Opswork.yaml template.
+I indicated what recipe use under the  Opswork.yaml template.
 
 For more information related to this repo please see:
 
