@@ -34,7 +34,7 @@ execute "install-redis" do
 end
 
 execute "move-folder" do
-	command "sudo mv redis-stable /etc/redis"
+	command "sudo cp ./redis-stable /etc/redis"
 	cwd "/tmp"
 end
 
