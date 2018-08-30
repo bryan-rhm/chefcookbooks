@@ -145,7 +145,7 @@ All the magic about how redis and sentinel works is located on the recipes, on t
 
 The setup recipe contains the commands to update the packages and install redis and sentinel.
 
-```
+```ruby
 #Download and install redis
 execute "download-redis" do
 	command "curl -O http://download.redis.io/redis-stable.tar.gz && tar xzvf redis-stable.tar.gz"
@@ -164,9 +164,9 @@ On the templates we substitute the ip of the node elected as master
 
 `<%= @is_master %>slaveof <%= @master_ip %> <%= @master_port %>`
 
-To be able to determine wich node will be the master I checked the instances under the stack and selected the first one as master.
+To be able to determine wich node would be the master I checked the instances under the stack and selected the first one as master.
 
-```
+```ruby
 	if instance["hostname"] != "#{layerName}1"
 		isMaster=""
 		search("aws_opsworks_instance").each do |instance|
@@ -178,6 +178,14 @@ To be able to determine wich node will be the master I checked the instances und
 	end
 ```
 
+What OpsWorsk do, is to pull the recipes of git repository indicated and select wich recipe use under te different stages:
+- setup
+- configure
+- deploy
+- undeploy
+- shutdown
+
+You should indicate what recipe use under the  Opswork.yaml template.
 
 For more information related to this repo please see:
 
