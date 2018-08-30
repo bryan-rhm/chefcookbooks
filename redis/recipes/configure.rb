@@ -43,7 +43,8 @@ template "/etc/redis/sentinel.conf" do
 end
 
 execute "start-redis" do
-	command "sudo systemctl restart redis"
+	command "redis-server ../redis.conf"
+	cwd "/etc/redis/src"
 end
 
 execute "start-sentinel" do
