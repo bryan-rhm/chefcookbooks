@@ -43,6 +43,13 @@ execute "create-redis-user" do
 	command "sudo adduser --system --group --no-create-home redis"
 end
 
+execute "allow-redis" do
+	command "sudo ufw allow 6379"
+end
+
+execute "allow-sentinel" do
+	command "sudo ufw allow 26379"
+end
 #Setting redis and sentinel as services
 systemd_unit "redis.service" do 
 	content({Unit:{

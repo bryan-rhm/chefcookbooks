@@ -66,7 +66,7 @@ dir /tmp
 #
 # Note: master name should not include special characters or spaces.
 # The valid charset is A-z 0-9 and the three characters ".-_".
-sentinel monitor mymaster <%= @master_ip %> <%= @master_port %> 2
+sentinel monitor mymaster <%= @master_ip %> 6379 2
 
 # sentinel auth-pass <master-name> <password>
 #

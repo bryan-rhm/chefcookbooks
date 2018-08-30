@@ -32,16 +32,13 @@ template "/etc/redis/sentinel.conf" do
 	source "sentinel.rb"
 	mode "0644"
 	master = ""
-	port = ""
 	search("aws_opsworks_instance").each do |instance|
 		if instance["hostname"] == "#{layerName}1"
 			master = instance["public_ip"]
-			port = "6379"
 		end
 	end
 	variables(
-		:master_ip => master,
-		:master_port => port
+		:master_ip => master
 		)
 end
 
