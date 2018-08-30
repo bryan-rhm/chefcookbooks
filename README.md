@@ -106,6 +106,77 @@ master_link_status:up
 
 Sentinel always checks the MASTER and SLAVE instances in the Redis cluster, checking whether they working as expected. If sentinel detects a failure in the MASTER node in a given cluster, Sentinel will start a failover process. As a result, Sentinel will pick a SLAVE instance and promote it to MASTER. 
 
+### Cloudformation
+![Cloudformation](https://i1.wp.com/opentodo.net/wp-content/uploads/2015/01/aws-CloudFormation.png?resize=523%2C151)
+
+To be able to deploy the entire infrastructure in an easily manner I created two templates, one for the VPC and another one for the OpsWorks stack and the layer.
+
+On the vpc.yaml I exported the variables needed on my OpsWorks template
+
+```
+####OUTPUTS####
+Outputs:
+  RedisSecurityGroupId:
+    Description: Id of the server security Group
+    Value: !Ref RedisSecurityGroup
+    Export:
+      Name: RedisSecurityGroupId
+  PublicSubnet1:
+    Description: Public Subnet Id
+    Value: !Ref PublicSubnet1
+    Export:
+      Name: PublicSubnet1
+  VpcId:
+    Description: Id of the Vpc
+    Value: !Ref MyVPC
+    Export:
+      Name: VpcId
+```
+
+### Chef
+
+![chef](https://cdn-images-1.medium.com/max/1600/1*fKfo3UH30hAqWK5GezMpxw@2x.png)
+
+
+All the magic about how redis and sentinel works is located on the recipes, on the folder ./redis/recipes there are two recipes:
+
+- Setup
+- Configure
+
+The setup recipe contains the commands to update the packages and install redis and sentinel.
+
+```
+#Download and install redis
+execute "download-redis" do
+	command "curl -O http://download.redis.io/redis-stable.tar.gz && tar xzvf redis-stable.tar.gz"
+	cwd "/tmp"
+end
+
+execute "install-redis" do
+	command "make && make test && sudo make install"
+	cwd "/tmp/redis-stable"
+end
+```
+
+The setup recipe contains all the redis and sentinel configuration using the templates redis.rb and sentinel.rb.
+
+On the templates we substitute the ip of the node elected as master
+
+`<%= @is_master %>slaveof <%= @master_ip %> <%= @master_port %>`
+
+To be able to determine wich node will be the master I checked the instances under the stack and selected the first one as master.
+
+```
+	if instance["hostname"] != "#{layerName}1"
+		isMaster=""
+		search("aws_opsworks_instance").each do |instance|
+			if instance["hostname"] == "#{layerName}1"
+				master = instance["public_ip"]
+				port = "6379"
+			end
+		end
+	end
+```
 
 
 For more information related to this repo please see:
