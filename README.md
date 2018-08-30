@@ -21,7 +21,7 @@ Once downloaded you will see two folders
 
 You only need the cloudformation directory, is where the cloudformation templates that you will use later are located.
 
-The other folder contains the Chef recipies to manage the configuration of the redis servers.
+The other folder contains the Chef recipes to manage the configuration of the redis servers.
 
 ## Deploying the Cloudformation stacks
 
