@@ -11,7 +11,7 @@ template "/etc/redis/redis.conf" do
 	master = "NO ONE"
 	port = ""
 	instance = search("aws_opsworks_instance", "self:true").first
-	if instance["hostname"] != "redis1"
+	if instance["hostname"] != "#{stack['name']}1"
 		isMaster=""
 		search("aws_opsworks_instance").each do |instance|
 			if instance["hostname"] == "#{stack['name']}1"
