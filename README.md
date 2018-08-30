@@ -78,6 +78,35 @@ master_link_status:up
 
 ```
 
+Now, go ahead and connect to the master node and execute the following command
+
+```sh
+$ sudp pkill redis-server
+```
+This will kill the redis-server on the master node, and another node will be elected as the master.
+
+Enter to another node and check the information again
+
+```sh
+$ redis-cli
+$ redis-cli> INFO replication 
+```
+
+And this time you should be able to see a different ip as the master or there is a possibility  that you enter on the new master node.
+
+```
+# Replication
+role:slave
+master_host:35.213.24.10
+master_port:6379
+master_link_status:up
+```
+
+### How it works?
+
+Sentinel always checks the MASTER and SLAVE instances in the Redis cluster, checking whether they working as expected. If sentinel detects a failure in the MASTER node in a given cluster, Sentinel will start a failover process. As a result, Sentinel will pick a SLAVE instance and promote it to MASTER. 
+
+
 
 For more information related to this repo please see:
 
