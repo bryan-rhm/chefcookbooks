@@ -34,8 +34,9 @@ execute "install-redis" do
 end
 
 execute "move-folder" do
-	command "sudo cp ./redis-stable /etc/redis"
+	command "sudo mv redis-stable /etc/redis"
 	cwd "/tmp"
+	returns [0,1]
 end
 
 execute "create-redis-user" do
