@@ -1,0 +1,99 @@
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+  Stackname:
+    Type: String
+    Description: Name of your opswork stack
+  GitRepo:
+    Type: String
+    Default: https://github.com/bryan-rhm/chefcookbooks.git
+  InstanceTypeParameter:
+    Description: Instance Type for the redis cluster
+    Type: String
+    Default: t2.micro
+    AllowedValues: 
+      - t2.micro
+      - t2.nano
+Mappings: 
+  Stack: 
+    name:
+      value: 'redis'
+Resources:
+# OPSWORKS STACK
+  OpsWorksStack:
+    Type: AWS::OpsWorks::Stack
+    Properties:
+      Name: !Ref Stackname
+      ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/aws-opsworks-service-role']]
+      DefaultInstanceProfileArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId',
+          ':instance-profile/aws-opsworks-ec2-role']]
+      DefaultSshKeyName: !Ref 'KeyName'
+      DefaultOs: Ubuntu 16.04 LTS
+      DefaultRootDeviceType: ebs
+      VpcId: !ImportValue VpcId
+      DefaultSubnetId: !ImportValue PublicSubnet1
+      UseCustomCookbooks: true
+      UseOpsworksSecurityGroups: false
+      CustomCookbooksSource:
+        Type: git
+        Url: !Ref GitRepo
+        Revision: master
+      ConfigurationManager:
+        Name: Chef
+        Version: '12'
+# OPSWORKS LAYER
+  RedisLayer:
+    Type: AWS::OpsWorks::Layer
+    DependsOn: OpsWorksStack
+    Properties:
+      StackId: !Ref 'OpsWorksStack'
+      Name: !FindInMap ["Stack","name","value"]
+      Type: custom
+      Shortname: !FindInMap ["Stack","name","value"]
+      EnableAutoHealing: 'false'
+      AutoAssignElasticIps: 'false'
+      AutoAssignPublicIps: 'true'
+      CustomRecipes:
+        Setup:
+        - redis::setup
+        Configure:
+        - redis::configure
+      CustomSecurityGroupIds:
+      - !ImportValue RedisSecurityGroupId
+# REDIS CLUSTER
+  RedisMaster:
+    Type: AWS::OpsWorks::Instance 
+    DependsOn: RedisLayer
+    Properties:
+      Hostname: !Join ['',[!FindInMap ["Stack","name","value"],'1']]
+      InstanceType: !Ref InstanceTypeParameter
+      StackId: !Ref OpsWorksStack
+      LayerIds:
+      - !Ref RedisLayer
+  RedisSlave1:
+    Type: AWS::OpsWorks::Instance 
+    DependsOn: RedisLayer
+    Properties:
+      Hostname: !Join ['',[!FindInMap ["Stack","name","value"],'2']]
+      InstanceType: !Ref InstanceTypeParameter
+      StackId: !Ref OpsWorksStack
+      LayerIds:
+      - !Ref RedisLayer
+  RedisSlave2:
+    Type: AWS::OpsWorks::Instance
+    DependsOn: RedisLayer
+    Properties:
+      Hostname: !Join ['',[!FindInMap ["Stack","name","value"],'3']]
+      InstanceType: !Ref InstanceTypeParameter
+      StackId: !Ref OpsWorksStack
+      LayerIds:
+      - !Ref RedisLayer
+  RedisSlave3:
+    Type: AWS::OpsWorks::Instance
+    DependsOn: RedisLayer
+    Properties:
+      Hostname: !Join ['',[!FindInMap ["Stack","name","value"],'4']]
+      InstanceType: !Ref InstanceTypeParameter
+      StackId: !Ref OpsWorksStack
+      LayerIds:
+      - !Ref RedisLayer
