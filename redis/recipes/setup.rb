@@ -43,6 +43,7 @@ execute "create-redis-user" do
 	command "sudo adduser --system --group --no-create-home redis"
 end
 
+#Setting redis and sentinel as services
 systemd_unit "redis.service" do 
 	content({Unit:{
 		Description: 'Redis In-Memory Data Store',

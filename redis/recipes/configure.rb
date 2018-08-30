@@ -4,6 +4,7 @@
 # Author:: Bryan Recinos
 # Copyright:: 2018, The Authors, All Rights Reserved.
 stack = search("aws_opsworks_stack").first
+stackName = stack['name']
 template "/etc/redis/redis.conf" do
 	source "redis.rb"
 	mode "0644"
@@ -11,10 +12,10 @@ template "/etc/redis/redis.conf" do
 	master = "NO ONE"
 	port = ""
 	instance = search("aws_opsworks_instance", "self:true").first
-	if instance["hostname"] != "#{stack['name']}1"
+	if instance["hostname"] != "#{stackName}1"
 		isMaster=""
 		search("aws_opsworks_instance").each do |instance|
-			if instance["hostname"] == "#{stack['name']}1"
+			if instance["hostname"] == "#{stackName}1"
 				master = instance["public_ip"]
 				port = "6379"
 			end
@@ -33,7 +34,7 @@ template "/etc/redis/sentinel.conf" do
 	master = ""
 	port = ""
 	search("aws_opsworks_instance").each do |instance|
-		if instance["hostname"] == "#{stack['name']}1"
+		if instance["hostname"] == "#{stackName}1"
 			master = instance["public_ip"]
 			port = "6379"
 		end
