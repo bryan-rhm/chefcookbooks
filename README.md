@@ -81,7 +81,7 @@ master_link_status:up
 Now, go ahead and connect to the master node and execute the following command
 
 ```sh
-$ sudp pkill redis-server
+$ sudo pkill redis-server
 ```
 This will kill the redis-server on the master node, and another node will be elected as the master.
 
